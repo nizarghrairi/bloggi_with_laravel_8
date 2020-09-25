@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Contact;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\NewCommentForAdminNotify;
+use App\Notifications\NewCommentForPostOwnerNotify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Purify\Facades\Purify;
@@ -16,14 +18,14 @@ class IndexController extends Controller
 
     public function index()
     {
-        $posts = Post::with(['category', 'media', 'user'])
+        $posts = Post::with(['media', 'user'])
             ->whereHas('category', function ($query) {
                 $query->whereStatus(1);
             })
             ->whereHas('user', function ($query) {
                 $query->whereStatus(1);
             })
-            ->wherePostType('post')->whereStatus(1)->orderBy('id', 'desc')->paginate(5);
+            ->post()->active()->orderBy('id', 'desc')->paginate(5);
 
         return view('frontend.index', compact('posts'));
     }
@@ -32,7 +34,7 @@ class IndexController extends Controller
     {
         $keyword = isset($request->keyword) && $request->keyword != '' ? $request->keyword : null;
 
-        $posts = Post::with(['category', 'media', 'user'])
+        $posts = Post::with(['media', 'user'])
             ->whereHas('category', function ($query) {
                 $query->whereStatus(1);
             })
@@ -44,7 +46,7 @@ class IndexController extends Controller
             $posts = $posts->search($keyword, null, true);
         }
 
-        $posts = $posts->wherePostType('post')->whereStatus(1)->orderBy('id', 'desc')->paginate(5);
+        $posts = $posts->post()->active()->orderBy('id', 'desc')->paginate(5);
 
         return view('frontend.index', compact('posts'));
     }
@@ -54,11 +56,10 @@ class IndexController extends Controller
         $category = Category::whereSlug($slug)->orWhere('id', $slug)->whereStatus(1)->first()->id;
 
         if ($category) {
-            $posts = Post::with(['media', 'user', 'category'])
-                ->withCount('approved_comments')
+            $posts = Post::with(['media', 'user'])
                 ->whereCategoryId($category)
-                ->wherePostType('post')
-                ->whereStatus(1)
+                ->post()
+                ->active()
                 ->orderBy('id', 'desc')
                 ->paginate(5);
 
@@ -74,12 +75,11 @@ class IndexController extends Controller
         $month = $exploded_date[0];
         $year = $exploded_date[1];
 
-        $posts = Post::with(['media', 'user', 'category'])
-            ->withCount('approved_comments')
+        $posts = Post::with(['media', 'user'])
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
-            ->wherePostType('post')
-            ->whereStatus(1)
+            ->post()
+            ->active()
             ->orderBy('id', 'desc')
             ->paginate(5);
         return view('frontend.index', compact('posts'));
@@ -91,11 +91,10 @@ class IndexController extends Controller
         $user = User::whereUsername($username)->whereStatus(1)->first()->id;
 
         if ($user) {
-            $posts = Post::with(['media', 'user', 'category'])
-                ->withCount('approved_comments')
+            $posts = Post::with(['media', 'user'])
                 ->whereUserId($user)
-                ->wherePostType('post')
-                ->whereStatus(1)
+                ->post()
+                ->active()
                 ->orderBy('id', 'desc')
                 ->paginate(5);
 
@@ -121,7 +120,7 @@ class IndexController extends Controller
             });
 
         $post = $post->whereSlug($slug);
-        $post = $post->whereStatus(1)->first();
+        $post = $post->active()->first();
 
         if($post) {
 
@@ -158,7 +157,17 @@ class IndexController extends Controller
             $data['post_id']        = $post->id;
             $data['user_id']        = $userId;
 
-            $post->comments()->create($data);
+            $comment = $post->comments()->create($data);
+
+            if (auth()->guest() || auth()->id() != $post->user_id) {
+                $post->user->notify(new NewCommentForPostOwnerNotify($comment));
+            }
+
+            User::whereHas('roles', function ($query){
+               $query->whereIn('name',['admin','editor']);
+            })->each(function ($admin,$key) use ($comment){
+                $admin->notify(new NewCommentForAdminNotify($comment));
+            });
 
             return redirect()->back()->with([
                 'message' => 'Comment added successfully',

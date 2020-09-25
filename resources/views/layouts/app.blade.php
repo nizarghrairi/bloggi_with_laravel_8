@@ -7,6 +7,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="userId" content="{{ auth()->check() ? auth()->id() : '' }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
     <meta name="description" content="">
@@ -24,9 +25,9 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('frontend/css/plugins.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
     <link href="{{ asset('frontend/js/bootstrap-fileinput/css/fileinput.min.css') }}" media="all" rel="stylesheet" type="text/css" />
 
     <!-- Modernizer js -->
@@ -41,8 +42,16 @@
             @include('partial.frontend.header')
 
             <main>
-                @include('partial.flash')
-                @yield('content')
+                <div class="page-blog-details section-padding--lg bg--white">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                @include('partial.flash')
+                            </div>
+                            @yield('content')
+                        </div>
+                    </div>
+                </div>
             </main>
 
             @include('partial.frontend.footer')

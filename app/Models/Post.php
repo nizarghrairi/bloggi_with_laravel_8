@@ -28,6 +28,16 @@ class Post extends Model
         ],
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+    public function scopePost($query)
+    {
+        return $query->where('post_type', 'post');
+    }
+
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -51,6 +61,11 @@ class Post extends Model
     public function media()
     {
         return $this->hasMany(PostMedia::class);
+    }
+
+    public function status()
+    {
+        return $this->status == 1 ? 'Active' : 'Inactive';
     }
 
 

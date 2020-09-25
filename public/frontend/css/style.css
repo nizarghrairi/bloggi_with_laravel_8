@@ -849,7 +849,7 @@ a {
 .section-padding--xlg {
   padding: 80px 0; }
 .section-padding--lg {
-  padding: 80px 0; }
+  padding: 40px 0; }
 .section-padding--md {
   padding: 120px 0; }
 .section-padding--sm {
@@ -1795,7 +1795,7 @@ Header Styles
       line-height: 35px;
       width: 24px; }
     .header__area .header__sidebar__right > li.shopcart > a {
-      background: rgba(0, 0, 0, 0) url("../frontend/images/icons/bell.png") no-repeat scroll 0 center;
+      background: rgba(0, 0, 0, 0) url("../images/icons/bell.png") no-repeat scroll 0 center;
       height: 100%;
       line-height: 35px;
       width: 24px; }
@@ -1834,9 +1834,9 @@ Header Styles
 			  overflow: visible;
 			  padding: 0;
 			  position: absolute;
-			  right: -2px;
+			  right: 0;
 			  text-align: center;
-			  top: 35%;
+			  top: 40%;
 			  width: 16px;
 			}
     .header__area .header__sidebar__right > li.setting__bar__icon {

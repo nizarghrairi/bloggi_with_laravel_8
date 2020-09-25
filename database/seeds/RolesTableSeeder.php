@@ -26,7 +26,7 @@ class RolesTableSeeder extends Seeder
             'name' => 'Admin',
             'username' => 'admin',
             'email' => 'admin@bloggi.test',
-            'mobile' => '21622520355',
+            'mobile' => '966500000001',
             'email_verified_at' => Carbon::now(),
             'password' => bcrypt('123123123'),
             'status' => 1,
@@ -38,7 +38,7 @@ class RolesTableSeeder extends Seeder
             'name' => 'Editor',
             'username' => 'editor',
             'email' => 'editor@bloggi.test',
-            'mobile' => '21622520335',
+            'mobile' => '966500000002',
             'email_verified_at' => Carbon::now(),
             'password' => bcrypt('123123123'),
             'status' => 1,
@@ -46,13 +46,13 @@ class RolesTableSeeder extends Seeder
         $editor->attachRole($editorRole);
 
 
-        $user1 = User::create(['name' => 'Nizar Ghrairi', 'username' => 'nizar', 'email' => 'nizar@bloggi.test', 'mobile' => '21655830823', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
+        $user1 = User::create(['name' => 'Nizar Ghrairi', 'username' => 'Nizar', 'email' => 'nizar@bloggi.test', 'mobile' => '21622520355', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
         $user1->attachRole($userRole);
 
-        $user2 = User::create(['name' => 'Mohamed Ghrairi', 'username' => 'mohamed', 'email' => 'mohamed@bloggi.test', 'mobile' => '21655830833', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
+        $user2 = User::create(['name' => 'Mohamed Ghrairi', 'username' => 'Mohamed', 'email' => 'mohamed@bloggi.test', 'mobile' => '21695202910', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
         $user2->attachRole($userRole);
 
-        $user3 = User::create(['name' => 'Yahya Ghrairi ', 'username' => 'yahya', 'email' => 'yahya@bloggi.test', 'mobile' => '21655830323', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
+        $user3 = User::create(['name' => 'Yahya Ghrairi', 'username' => 'Yahya', 'email' => 'yahya@bloggi.test', 'mobile' => '21655830823', 'email_verified_at' => Carbon::now(), 'password' => bcrypt('123123123'), 'status' => 1,]);
         $user3->attachRole($userRole);
 
         for ($i = 0; $i <10; $i++) {

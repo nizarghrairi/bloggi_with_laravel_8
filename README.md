@@ -1,6 +1,7 @@
-## نظام إ دارة المحتوى باستخدام Laravel Framework
+##Laravel Framework : Content Management System using
 
-ناء نظام إدارة محتوى متكالمل من الصفر باستخدام Laravel Framework، وهو نظام شبيه بالووردبريس سيكون متعدد المستخدمين والصلاحيات لكل مستخدم، حيث يمكن للمستخدمين التسجيل في النظام وإمكانية كتابة مقالات والتحكم بها والتحكم بالتعليقات على المقالات الخاصة ببهم
-
-## ملاحظة 
-الملفات الحالية إلى نهاية الفيديو الذي تم نشره على اليوتيوب رقم 38
+`Building an integrated content management system from scratch using
+the Laravel Framework, which is a WordPress-like system that will 
+have multiple users and privileges for each user, where users can 
+register in the system and have the ability to write articles and
+control them and control comments on their articles`

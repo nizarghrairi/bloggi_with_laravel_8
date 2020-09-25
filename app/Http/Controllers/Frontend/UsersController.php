@@ -39,24 +39,24 @@ class UsersController extends Controller
     public function update_info(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'             => 'required',
-            'email'            => 'required|email',
-            'mobile'           => 'required|numeric',
-            'bio'              => 'nullable|min:10',
-            'receive_email'   => 'required',
-            'user_image'       =>'nullable|image|max:20000,mimes:jpeg,jpg,png'
+            'name'          => 'required',
+            'email'         => 'required|email',
+            'mobile'        => 'required|numeric',
+            'bio'           => 'nullable|min:10',
+            'receive_email' => 'required',
+            'user_image'    => 'nullable|image|max:20000,mimes:jpeg,jpg,png'
         ]);
         if($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $data['name']            = $request->name;
-        $data['email']           = $request->email;
-        $data['mobile']          = $request->mobile;
-        $data['bio']             = $request->bio;
+        $data['name']           = $request->name;
+        $data['email']          = $request->email;
+        $data['mobile']         = $request->mobile;
+        $data['bio']            = $request->bio;
         $data['receive_email']  = $request->receive_email;
 
-        if ($image = $request->file('user_image')){
+        if ($image = $request->file('user_image')) {
             if (auth()->user()->user_image != ''){
                 if (File::exists('/assets/users/' . auth()->user()->user_image)){
                     unlink('/assets/users/' . auth()->user()->user_image);
@@ -64,7 +64,7 @@ class UsersController extends Controller
             }
             $filename = Str::slug(auth()->user()->username).'.'.$image->getClientOriginalExtension();
             $path = public_path('assets/users/' . $filename);
-            Image::make($image->getRealPath())->resize(500, 500, function ($constraint) {
+            Image::make($image->getRealPath())->resize(300, 300, function ($constraint) {
                 $constraint->aspectRatio();
             })->save($path, 100);
 
@@ -73,15 +73,15 @@ class UsersController extends Controller
 
         $update = auth()->user()->update($data);
 
-        if ($update){
+        if ($update) {
             return redirect()->back()->with([
-               'message' => 'Information updated successfully',
-               'alert-type'=>'success',
+                'message' => 'Information updated successfully',
+                'alert-type' => 'success',
             ]);
-        }else{
-            return redirect()->back->with([
+        } else {
+            return redirect()->back()->with([
                 'message' => 'Something was wrong',
-                'alert-type'=>'danger',
+                'alert-type' => 'danger',
             ]);
         }
     }
@@ -89,33 +89,35 @@ class UsersController extends Controller
     public function update_password(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'current_password'      => 'required',
-            'password'              => 'required|confirmed'
+            'current_password'  => 'required',
+            'password'          => 'required|confirmed'
         ]);
         if($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
         $user = auth()->user();
-        if (Hash::check($request->current_password, $user->password)){
+        if (Hash::check($request->current_password, $user->password)) {
             $update = $user->update([
-                'password'=>bcrypt($request->password),
+                'password' => bcrypt($request->password),
             ]);
 
-            if ($update){
+            if ($update) {
                 return redirect()->back()->with([
-                    'message'=>'Password updated successfully',
-                    'alert-type'=>'success'
+                    'message' => 'Password updated successfully',
+                    'alert-type' => 'success',
                 ]);
-            }else{
+            } else {
                 return redirect()->back()->with([
-                    'message'=>'Something was wrong',
-                    'alert-type'=>'danger',
+                    'message' => 'Something was wrong',
+                    'alert-type' => 'danger',
                 ]);
             }
-        }else{
+
+        } else {
             return redirect()->back()->with([
-                'message'=>'Something was wrong',
-                'alert-type'=>'danger',
+                'message' => 'Something was wrong',
+                'alert-type' => 'danger',
             ]);
         }
     }
@@ -181,17 +183,17 @@ class UsersController extends Controller
 
     public function edit_post($post_id)
     {
-        $post = Post::whereSlug($post_id)->orWhere('id',$post_id)->whereUserId(auth()->id())->first();
+        $post = Post::whereSlug($post_id)->orWhere('id', $post_id)->whereUserId(auth()->id())->first();
 
-        if ($post){
+        if ($post) {
             $categories = Category::whereStatus(1)->pluck('name', 'id');
-            return view('frontend.users.edit_post', compact('post','categories'));
+            return view('frontend.users.edit_post', compact('post', 'categories'));
         }
 
         return redirect()->route('frontend.index');
     }
 
-    public function update_post(Request $request,$post_id)
+    public function update_post(Request $request, $post_id)
     {
         $validator = Validator::make($request->all(), [
             'title'         => 'required',
@@ -203,9 +205,9 @@ class UsersController extends Controller
         if($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $post = Post::whereSlug($post_id)->orWhere('id',$post_id)->whereUserId(auth()->id())->first();
+        $post = Post::whereSlug($post_id)->orWhere('id', $post_id)->whereUserId(auth()->id())->first();
 
-        if ($post){
+        if ($post) {
             $data['title']              = $request->title;
             $data['description']        = Purify::clean($request->description);
             $data['status']             = $request->status;
@@ -233,10 +235,12 @@ class UsersController extends Controller
                     $i++;
                 }
             }
+
             return redirect()->back()->with([
-                'message' => 'Post update successfully',
+                'message' => 'Post updated successfully',
                 'alert-type' => 'success',
             ]);
+
         }
         return redirect()->back()->with([
             'message' => 'Something was wrong',
@@ -247,7 +251,7 @@ class UsersController extends Controller
 
     public function destroy_post($post_id)
     {
-        $post = Post::whereSlug($post_id)->orWhere('id',$post_id)->whereUserId(auth()->id())->first();
+        $post = Post::whereSlug($post_id)->orWhere('id', $post_id)->whereUserId(auth()->id())->first();
 
         if ($post) {
             if ($post->media->count() > 0) {
@@ -264,117 +268,129 @@ class UsersController extends Controller
                 'alert-type' => 'success',
             ]);
         }
+
         return redirect()->back()->with([
-            'message' => 'Something was wrong ',
+            'message' => 'Something was wrong',
             'alert-type' => 'danger',
         ]);
+
     }
 
     public function destroy_post_media($media_id)
     {
         $media = PostMedia::whereId($media_id)->first();
-        if ($media){
-            if (File::exists('assets/posts/'.$media->file_name)){
-                unlink('assets/posts/'.$media->file_name);
+        if ($media) {
+            if (File::exists('assets/posts/' . $media->file_name)) {
+                unlink('assets/posts/' . $media->file_name);
             }
-            $media->delete();
+             $media->delete();
             return true;
         }
         return false;
     }
 
-    public function show_comments()
+    public function show_comments(Request $request)
     {
-        $posts_id = auth()->user()->posts->pluck('id')->toArray();
-        $comments = Comment::whereIn('post_id',$posts_id)->paginate(10);
 
-        return view('frontend.users.comments',compact('comments'));
+        $comments = Comment::query();
+
+        if (isset($request->post) && $request->post != '') {
+            $comments = $comments->wherePostId($request->post);
+        } else {
+            $posts_id = auth()->user()->posts->pluck('id')->toArray();
+            $comments = $comments->whereIn('post_id', $posts_id);
+        }
+        $comments = $comments->orderBy('id', 'desc');
+        $comments = $comments->paginate(10);
+
+        return view('frontend.users.comments', compact('comments'));
     }
 
     public function edit_comment($comment_id)
     {
-        $comment = Comment::whereId($comment_id)->whereHas('post',function ($query){
-            $query->where('posts.user_id',auth()->id());
+        $comment = Comment::whereId($comment_id)->whereHas('post', function ($query) {
+            $query->where('posts.user_id', auth()->id());
         })->first();
 
-        if ($comment){
-
-            return view('frontend.users.edit_comment',compact('comment'));
-        }else{
+        if ($comment) {
+            return view('frontend.users.edit_comment', compact('comment'));
+        } else {
             return redirect()->back()->with([
-                'message' => 'Something was wrong ',
+                'message' => 'Something was wrong',
                 'alert-type' => 'danger',
             ]);
         }
+
     }
 
     public function update_comment(Request $request, $comment_id)
     {
         $validator = Validator::make($request->all(), [
-            'name'         => 'required',
-            'email'        => 'required|email',
-            'url'          => 'required|url',
-            'status'       => 'required',
-            'comment'      => 'required',
+            'name'          => 'required',
+            'email'         => 'required|email',
+            'url'           => 'nullable|url',
+            'status'        => 'required',
+            'comment'       => 'required',
         ]);
         if($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $comment = Comment::whereId($comment_id)->whereHas('post',function ($query){
-            $query->where('posts.user_id',auth()->id());
+
+        $comment = Comment::whereId($comment_id)->whereHas('post', function ($query) {
+            $query->where('posts.user_id', auth()->id());
         })->first();
 
-        if ($comment){
+        if ($comment) {
+            $data['name']          = $request->name;
+            $data['email']         = $request->email;
+            $data['url']           = $request->url != '' ? $request->url : null;
+            $data['status']        = $request->status;
+            $data['comment']       = Purify::clean($request->comment);
 
-        $data['name']           = $request-> name;
-        $data['email']          = $request->email;
-        $data['url']            = $request->url != '' ? $request->url:null;
-        $data['status']         = $request->status;
-        $data['comment']        = Purify::clean($request->comment);
+            $comment->update($data);
 
-        $comment->update($data);
-
-        if ($request->status ==1){
-            Cache::forget('recent_comments');
-        }
+            if ($request->status == 1) {
+                Cache::forget('recent_comments');
+            }
 
             return redirect()->back()->with([
-                'message' => 'Comment updated successfully ',
+                'message' => 'Comment updated successfully',
                 'alert-type' => 'success',
             ]);
 
-        }else{
+        } else {
             return redirect()->back()->with([
-                'message' => 'Something was wrong ',
+                'message' => 'Something was wrong',
                 'alert-type' => 'danger',
             ]);
         }
+
     }
 
     public function destroy_comment($comment_id)
     {
-        $comment = Comment::whereId($comment_id)->whereHas('post',function ($query){
-            $query->where('posts.user_id',auth()->id());
+        $comment = Comment::whereId($comment_id)->whereHas('post', function ($query) {
+            $query->where('posts.user_id', auth()->id());
         })->first();
 
-        if ($comment){
-
+        if ($comment) {
             $comment->delete();
 
             Cache::forget('recent_comments');
 
             return redirect()->back()->with([
-                'message' => 'Comment deleted successfully ',
+                'message' => 'Comment deleted successfully',
                 'alert-type' => 'success',
             ]);
 
-        }else{
+        } else {
             return redirect()->back()->with([
-                'message' => 'Something was wrong ',
+                'message' => 'Something was wrong',
                 'alert-type' => 'danger',
             ]);
         }
     }
+
 
 
 }
